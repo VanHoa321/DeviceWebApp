@@ -81,8 +81,7 @@
                                         <div class="alert alert-info alert-dismissible">
                                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                                             <i class="icon fas fa-exclamation-triangle"></i>Chưa phân công kỹ thuật viên
-                                        </div>
-                                        
+                                        </div>                                        
                                     @else
                                         <div class="row">
                                             <div class="col-md-5">
@@ -123,7 +122,7 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <a href="{{route('main.maintenance', $main_id)}}" class="btn btn-warning"><i class="fa-solid fa-rotate-left" style="color:white" title="Quay lại"></i></a>
+                            <a href="{{route('mainM.maintenance_detail', $main_id)}}" class="btn btn-warning"><i class="fa-solid fa-rotate-left" style="color:white" title="Quay lại"></i></a>
                         </div>
                     </div>
                 </div>

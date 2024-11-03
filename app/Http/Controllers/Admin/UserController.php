@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\VerifyAccount;
 use App\Models\Position;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use App\Models\User;
 use App\Models\WorkUnit;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -46,17 +48,22 @@ class UserController extends Controller
 
         $create = new User();
         $create->user_name = $request->user_name;
-        $create->password = Hash::make($request->password);
+        $pw = '';
+        for ($i = 0; $i < 6; $i++) {
+            $pw .= rand(0, 9);
+        }
+        $create->password = Hash::make($pw);
         $create->full_name = $request->full_name;
         $create->email = $request->email;
         $create->phone = $request->phone;
         $create->dob = Carbon::now();
         $create->avatar = "http://127.0.0.1:8000/storage/photos/1/Avatar/avatar5.png";
-        $create->status = 1;
+        $create->status = 0;
         $create->position_id = $request->position_id;
         $create->unit_id = $request->unit_id;
         $create->role_id = $request->role_id;
         $create->save();
+        Mail::to('vanhoa12092003@gmail.com')->send(new VerifyAccount($create, $pw));
         $request->session()->put("messenge", ["style"=>"success","msg"=>"Thêm mới người dùng thành công"]);
         return redirect()->route("user.index");
 

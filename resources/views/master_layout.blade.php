@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,6 +27,7 @@
     <link href="{{asset("assets/plugins/toastr/toastr.min.css")}}" rel="stylesheet" />
     <link href="{{asset("assets/plugins/toastr/toastr.css")}}" rel="stylesheet" />
 </head>
+
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         <div class="preloader flex-column justify-content-center align-items-center" style="z-index: 9999;">
@@ -42,69 +44,15 @@
             </ul>
 
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-toggle="modal" data-target="#modal-maintenance" title="Mô tả lỗi">
-                        <i class="fa-regular fa-file" data-toggle="modal" data-target="#modal-maintenance" title="Mô tả lỗi"></i>
-                        <span class="badge badge-danger navbar-badge">3</span>
-                    </a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                    <i class="far fa-comments"></i>
-                    <span class="badge badge-danger navbar-badge">3</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <a href="#" class="dropdown-item">
-                        <!-- Message Start -->
-                        <div class="media">
-                        <img src="dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-                        <div class="media-body">
-                            <h3 class="dropdown-item-title">
-                            Brad Diesel
-                            <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-                            </h3>
-                            <p class="text-sm">Call me whenever you can...</p>
-                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                        </div>
-                        </div>
-                        <!-- Message End -->
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                        <!-- Message Start -->
-                        <div class="media">
-                        <img src="dist/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
-                        <div class="media-body">
-                            <h3 class="dropdown-item-title">
-                            John Pierce
-                            <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
-                            </h3>
-                            <p class="text-sm">I got your message bro</p>
-                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                        </div>
-                        </div>
-                        <!-- Message End -->
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                        <!-- Message Start -->
-                        <div class="media">
-                        <img src="dist/img/user3-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
-                        <div class="media-body">
-                            <h3 class="dropdown-item-title">
-                            Nora Silvester
-                            <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
-                            </h3>
-                            <p class="text-sm">The subject goes here</p>
-                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                        </div>
-                        </div>
-                        <!-- Message End -->
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
-                    </div>
-                </li>
+                @if (Auth::user()->role_id == 2)
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="update-reports" data-toggle="modal" data-target="#modal-maintenance">
+                            <i class="fa-regular fa-file" data-toggle="modal" data-target="#modal-maintenance"></i>
+                            <span class="badge badge-danger navbar-badge" id="count-report">{{count(session('reports', []))}}</span>
+                        </a>
+                    </li>
+                @endif
+                <x-notification-report />
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <img src="{{Auth::user()->avatar}}" alt="User Avatar" class="img-size-50 mr-3 img-circle" style="margin-top:-8px; width:40px; height:40px">
@@ -161,28 +109,49 @@
         </aside>
         @yield('content')
         <aside class="control-sidebar control-sidebar-dark"></aside>
+        <!--modal -->
         <div class="modal fade" id="modal-maintenance">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Mô tả lỗi</h4>
+                        <h4 class="modal-title">Chi tiết biên bản bảo trì</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Mô tả lỗi gặp phải</label>
-                            <textarea id="error-description" class="form-control mb-3" placeholder="Nhập mô tả lỗi" style=" height: 100px"></textarea>
-                        </div>
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                        <section class="content">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">                                            
+                                            <div class="card-body">
+                                                <table id="example-table-2" class="table table-bordered table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th style="width:15%">Hình ảnh</th>
+                                                            <th style="width:40%">Tên thiết bị</th>
+                                                            <th>Số hiệu</th>
+                                                            <th>Thuộc bộ phận</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="report-table-body"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>                               
+                                </div>
+                            </div>
+                        </section>
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
-                        <button type="button" class="btn btn-success btn-save-error">Lưu</button>
                     </div>
                 </div>
             </div>
-        </div><!-- /.modal -->
+        </div>
+        <!-- /.modal -->
     </div>
     <script src="{{asset("assets/plugins/jquery/jquery.min.js")}}"></script>
     <script src="{{asset("assets/plugins/jquery-ui/jquery-ui.min.js")}}"></script>
@@ -210,7 +179,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{asset("assets/plugins/toastr/toastr.min.js")}}"></script>
     <script type="text/javascript">
-        $(function () {
+        $(function() {
             $('#example-table').DataTable({
                 pageLength: 10,
                 language: {
@@ -229,50 +198,77 @@
                 },
             });
         });
+
+        $(function() {
+            $('#example-table-2').DataTable({
+                pageLength: 10,
+                language: {
+                    "lengthMenu": "Hiển thị _MENU_ mục",
+                    "search": "Tìm kiếm:",
+                    "zeroRecords": "Không tìm thấy dữ liệu",
+                    "info": "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                    "infoEmpty": "Hiển thị từ 0 đến 0 của 0 mục",
+                    "infoFiltered": "(được lọc từ _MAX_ tổng số mục)",
+                    "paginate": {
+                        "first": "Đầu",
+                        "last": "Cuối",
+                        "next": "Tiếp",
+                        "previous": "Trước"
+                    }
+                },
+                lengthMenu: [3, 5, 10, 25, 50, 100],
+                pageLength: 3
+            });
+        });
     </script>
     <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
-    <script>       
-        $('#lfm').filemanager('image', {prefix: '/files-manager'});
-        $(document).ready(function(){
+    <script>
+        $('#lfm').filemanager('image', {
+            prefix: '/files-manager'
+        });
+        $(document).ready(function() {
             var lfm = function(options, cb) {
-            var route_prefix = (options && options.prefix) ? options.prefix : '/files-manager';
-            window.open(route_prefix + '?type=' + options.type || 'file', 'FileManager', 'width=700,height=400');
-            window.SetUrl = cb;
+                var route_prefix = (options && options.prefix) ? options.prefix : '/files-manager';
+                window.open(route_prefix + '?type=' + options.type || 'file', 'FileManager', 'width=700,height=400');
+                window.SetUrl = cb;
             };
 
             var LFMButton = function(context) {
-            var ui = $.summernote.ui;
-            var button = ui.button({
-                contents: '<i class="note-icon-picture"></i> ',
-                tooltip: 'Insert image with filemanager',
-                click: function() {
+                var ui = $.summernote.ui;
+                var button = ui.button({
+                    contents: '<i class="note-icon-picture"></i> ',
+                    tooltip: 'Insert image with filemanager',
+                    click: function() {
 
-                lfm({type: 'image', prefix: '/files-manager'}, function(lfmItems, path) {
-                    lfmItems.forEach(function (lfmItem) {
-                    context.invoke('insertImage', lfmItem.url);
-                    });
+                        lfm({
+                            type: 'image',
+                            prefix: '/files-manager'
+                        }, function(lfmItems, path) {
+                            lfmItems.forEach(function(lfmItem) {
+                                context.invoke('insertImage', lfmItem.url);
+                            });
+                        });
+
+                    }
                 });
-
-                }
-            });
-            return button.render();
+                return button.render();
             };
 
             $('#summernote').summernote({
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'italic', 'underline', 'clear']],
-                ['fontname', ['fontname']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph', 'height', 'table']],
-                ['insert', ['link', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']],
-                ['misc', ['undo', 'redo', 'print', 'clear']],
-                ['popovers', ['lfm']],
-            ],
-            buttons: {
-                lfm: LFMButton
-            }
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph', 'height', 'table']],
+                    ['insert', ['link', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']],
+                    ['misc', ['undo', 'redo', 'print', 'clear']],
+                    ['popovers', ['lfm']],
+                ],
+                buttons: {
+                    lfm: LFMButton
+                }
             })
             var initialUrl = $('#thumbnail').val();
             if (initialUrl) {
@@ -284,7 +280,7 @@
             $('#lfm').on('click', function() {
                 var route_prefix = '/files-manager';
                 window.open(route_prefix + '?type=image', 'FileManager', 'width=700,height=400');
-                window.SetUrl = function (items) {
+                window.SetUrl = function(items) {
                     var url = items[0].url;
                     $('#holder').attr('src', url);
                     $('#thumbnail').val(url);
@@ -292,6 +288,44 @@
             });
         });
     </script>
+    <script>
+        function updateReportTable() {
+            $.ajax({
+                url: '/use-unit/get-reports',
+                method: 'GET',
+                success: function(response) {
+                    const reports = response.reports;
+                    var table = $('#example-table-2').DataTable();
+                    table.clear();
+                    let counter = 1;
+                    $.each(reports, function(id, items) {
+                        table.row.add([
+                            `<td style="text-align: center; vertical-align: middle">${counter++}</td>`,
+                            `<td style="width: 15%; text-align: center; vertical-align: middle"><img src="${items.image}" alt="" style="width: 80px; height: 80px"></td>`, // Hình ảnh
+                            `<td style="width: 30%; text-align: center; vertical-align: middle">${items.name}</td>`,
+                            `<td style="text-align: center; vertical-align: middle">${items.code}</td>`,
+                            `<td style="text-align: center; vertical-align: middle">${items.unit}</td>`,
+                        ]).draw(false);
+                    });
+                    table.draw();
+                },
+                error: function() {
+                    alert('Có lỗi xảy ra khi tải danh sách thiết bị.');
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $('#update-reports').click(function() {
+                updateReportTable();
+            });
+           
+            setTimeout(function() {
+                $("#myAlert").fadeOut(500);
+            }, 3500);
+        })
+    </script>
     @yield('scripts')
 </body>
+
 </html>

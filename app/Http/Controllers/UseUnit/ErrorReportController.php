@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\UseUnit;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ReportDevice;
 use App\Models\Branch;
 use App\Models\Device;
 use App\Models\Buildings;
@@ -10,8 +11,11 @@ use App\Models\Room;
 use App\Models\MaintenanceReview;
 use App\Models\Maintenance;
 use App\Models\MaintenanceDetail;
+use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ErrorReportController extends Controller
 {
@@ -31,35 +35,55 @@ class ErrorReportController extends Controller
         if ($device == null) {
             return response()->json(['danger' => true, 'message' => 'Không tìm thấy thiết bị']);
         }
-        if ($device->status == 0) {
-            return response()->json(['warning' => true, 'message' => 'Thiết bị đã được báo hỏng']);
+        
+        $reportedIssues = MaintenanceDetail::where('device_id', $device->device_id)
+        ->whereIn('status', [1, 2, 3])
+        ->exists();
+        if ($reportedIssues) {
+            return response()->json(['warning' => true, 'message' => 'Thiết bị đã được báo hỏng và đang sửa']);
         }
+
         $reports = session()->get('reports', []);
         if (isset($reports[$device->device_id])) {
             return response()->json(['warning' => true, 'message' => 'Thiết bị đã có trong phiếu bảo trì']);
         } else {
+            $errorDescription = request()->input('error'); 
             $reports[$device->device_id] = [
                 'image' => $device->image,
                 'name' => $device->name,
                 'type' => $device->type->name,
                 'code' => $device->code,
                 'unit' => $device->unit->name,
-                'error' => null,
+                'error' => $errorDescription,
             ];
+            $selectedDevices = session()->get('selected_devices', []);
+            if (!isset($selectedDevices[$device->device_id])) {
+                $selectedDevices[$device->device_id] = [
+                    'checked' => true,
+                    'description' => $errorDescription
+                ];
+            }
             $count = count($reports);
             session()->put('reports', $reports);
+            session()->put('selected_devices', $selectedDevices);
             return response()->json(['success' => true, 'message' => 'Thêm vào phiếu bảo trì thành công', 'count' => $count]);
         }
     }
 
     public function removeReport($id){
         if($id){
-            $resports = session()->get('reports');
-            if(isset($resports[$id])){
-                unset($resports[$id]);
-                session()->put('reports', $resports);
+            $reports = session()->get('reports');
+            $selectedDevices = session()->get('selected_devices', []);
+            if(isset($reports[$id])){
+                unset($reports[$id]);
+                session()->put('reports', $reports);
             }
-            return response()->json(['success' => true, 'message' => 'Đã xóa thiết bị khỏi phiếu bảo trì']);
+            $count = count($reports);
+            if (isset($selectedDevices[$id])) {
+                unset($selectedDevices[$id]);
+                session()->put('selected_devices', $selectedDevices);
+            }
+            return response()->json(['success' => true, 'message' => 'Đã xóa thiết bị khỏi phiếu bảo trì', 'count' => $count]);
         }
         return response()->json(['success' => false, 'message' => 'Không tìm thấy thiết bị']);
     }
@@ -70,6 +94,12 @@ class ErrorReportController extends Controller
             return response()->json(['success' => true, 'message' => 'Đã xóa tất cả thiết bị khỏi phiếu bảo trì']);
         }
         return response()->json(['success' => false, 'message' => 'Không có thiết bị nào trong phiếu bảo trì để xóa']);
+    }
+
+    public function getReports()
+    {
+        $reports = session()->get('reports', []);
+        return response()->json(['reports' => $reports]);
     }
     
     public function getErrorReport($id)
@@ -107,7 +137,14 @@ class ErrorReportController extends Controller
     public function saveMaintenance(Request $request){
 
         $reports = session()->get('reports', []);
-        // Kiểm tra xem mô tả lỗi có trống không
+
+        if (empty($reports)) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Chưa có thiết bị nào được chọn'
+            ]);
+        }
+
         foreach ($reports as $device_id => $report) {
             if (empty($report['error'])) {
                 return response()->json([
@@ -139,6 +176,8 @@ class ErrorReportController extends Controller
         $maintenance_id = $maintenance->maintenance_id;
 
         // 3. Đọc session reports và lưu vào bảng bảo trì chi tiết
+        $deviceReports = [];
+        $deviceList = [];
         if($reports){
             foreach ($reports as $device_id => $report) {
                 $maintenanceDetail = new MaintenanceDetail();
@@ -149,11 +188,37 @@ class ErrorReportController extends Controller
                 $maintenanceDetail->expense = 0;
                 $maintenanceDetail->error_description = $report['error'];
                 $maintenanceDetail->save();
+
+                $device = Device::find($device_id);
+                $deviceReports[] = [
+                    'image' => $device->image,
+                    'name' => $device->name,
+                    'code' => $device->code,
+                    'error_description' => $report['error']
+                ];
+                $deviceList[] = ' - ' . $device->name . ' (' . $device->code . ') - Mô tả lỗi: ' . $report['error'];
             }
         }
-
         session()->forget('reports');
-        return response()->json(['success' => true, 'message' => 'Tạo phiếu bảo trì thành công']);
+        session()->forget('selected_devices');
+
+        //Gửi thông báo
+        $users = User::where('role_id', 3)->get();
+        $sender = User::find(Auth::user()->user_id);
+        $created_at = now();
+        $deviceListString = implode("\n", $deviceList);
+        $message = 'Có một đơn bảo trì mới từ ' . $sender->full_name . ' chờ được xác nhận. Danh sách thiết bị bao gồm:' . "\n" . $deviceListString;
+        foreach ($users as $user) {
+            Notification::create([
+                'send_id' => $sender->user_id,
+                'receiver_id' => $user->user_id,
+                'message' => $message,
+                'created_at' => $created_at,
+                'is_read' => false
+            ]);
+            Mail::to('vanhoa12092003@gmail.com')->send(new ReportDevice($sender ,$maintenance, $deviceReports));
+        }
+        return response()->json(['success' => true, 'message' => 'Tạo phiếu bảo trì thành công', 'count' => 0]);
     }
 
     public function getBuildingsByBranch($branch_id)
@@ -168,10 +233,21 @@ class ErrorReportController extends Controller
         return response()->json($rooms);
     }
 
-    public function getDevicesByRoom($room_id)
+    public function getDevicesByRoom(Request $request, $room_id)
     {
         $number = 3;
-        $devices = Device::with('type', 'room', 'unit')->where('room_id', $room_id)->paginate($number);
-        return response()->json($devices);
+        $query = Device::with('type', 'room', 'unit')->where('room_id', $room_id);
+        if ($request->has('search') && !empty($request->input('search'))) {
+            $search = $request->input('search');
+            $query->where('code', 'like', "%$search%");
+        }
+        $devices = $query->paginate($number);
+        $selectedDevices = session()->get('selected_devices', []);
+        
+        return response()->json([
+            'devices' => $devices,
+            'selected_devices' => $selectedDevices
+        ]);
     }
+
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\BuildingsController;
@@ -12,6 +13,9 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\UseUnit\HomeUserUnitController;
 use App\Http\Controllers\UseUnit\ErrorReportController;
 use App\Http\Controllers\UseUnit\MaintenanceController;
+use App\Http\Controllers\ManagerUnit\HomeManagerUnitController;
+use App\Http\Controllers\ManagerUnit\ManagerReportController;
+use App\Http\Controllers\Technician\HomeTechnicianController;
 
 Route::get('/',[AccountController::class, "login"])->name("index");
 
@@ -30,6 +34,12 @@ Route::get('/cap-nhat-thong-tin', [AccountController::class, 'editProfile']) ->n
 Route::post('/profile/update', [AccountController::class, 'updateProfile']) -> name('updateProfile');
 Route::get('/doi-mat-khau', [AccountController::class, 'editPassword']) ->name('editPassword');
 Route::post('/update-password', [AccountController::class, 'updatePassword']) -> name('updatePassword');
+Route::get('/xac-nhan-tai-khoan/{email}', [AccountController::class, 'verify']) -> name('verify');
+
+//Notification
+Route::get('/thong-bao-cua-toi', [NotificationController::class, 'index']) ->name('noti.index');
+Route::delete('/noti/destroy/{id}', [NotificationController::class, 'destroy']);
+Route::get('/chi-tiet-thong-bao/{id}', [NotificationController::class, 'detail']) -> name('noti.detail');
 
 //Admin
 Route::prefix('admin')->middleware("admin")->group(function () {
@@ -96,6 +106,7 @@ Route::prefix('use-unit')->middleware("use-unit")->group(function () {
     Route::post('/remove-report/{id}', [ErrorReportController::class, 'removeReport']);
     Route::get('/clear-report', [ErrorReportController::class, 'clearReport']);
     Route::get('/get-error/{id}', [ErrorReportController::class, 'getErrorReport']);
+    Route::get('/get-reports', [ErrorReportController::class, 'getReports']);
     Route::post('/save-error', [ErrorReportController::class, 'saveErrorReport']);
     Route::post('/save-maintenance', [ErrorReportController::class, 'saveMaintenance']);
 
@@ -104,5 +115,20 @@ Route::prefix('use-unit')->middleware("use-unit")->group(function () {
     Route::post('/cancel/{id}', [MaintenanceController::class, 'cancel']);
     Route::get('/danh-sach-bao-loi/{id}', [MaintenanceController::class, 'maintenance']) ->name('main.maintenance');
     Route::get('/chi-tiet-bao-loi/{id}', [MaintenanceController::class, 'detail']) ->name('main.detail');
+});
+
+Route::prefix('manager-unit')->middleware("manager-unit")->group(function () {
+    Route::get('/trang-chu', [HomeManagerUnitController::class, 'index']) ->name('homeM.index');
+    
+    //Maintenance
+    Route::get('/danh-sach-bao-tri', [ManagerReportController::class, 'index']) ->name('mainM.index');
+    Route::get('/danh-sach-bao-loi/{id}', [ManagerReportController::class, 'maintenance_detail']) ->name('mainM.maintenance_detail');
+    Route::get('/chi-tiet-bao-loi/{id}', [ManagerReportController::class, 'detail']) ->name('mainM.detail');
+    Route::post('/confirm/{id}', [ManagerReportController::class, 'confirm']);
+    Route::post('/phan-cong', [ManagerReportController::class, 'assignTechnician']);
+});
+
+Route::prefix('technician')->middleware("technician")->group(function () {
+    Route::get('/trang-chu', [HomeTechnicianController::class, 'index']) ->name('homeT.index');
 });
 

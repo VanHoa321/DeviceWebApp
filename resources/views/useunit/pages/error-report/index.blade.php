@@ -1,7 +1,6 @@
 @extends('master_layout')
 @section('title', 'Báo hỏng thiết bị')
 @section('content')
-
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
@@ -54,9 +53,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-12 d-none justify-content-between align-items-center mb-2" id="search-container">
+                                <div class="input-group w-25 ml-auto">
+                                    <input type="text" id="search-input" class="form-control mr-1" placeholder="Nhập số hiệu thiết bị">
+                                    <button class="btn btn-info" type="button" id="search-button">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="row">
-                                <div class="col-md-12">
-                                    <table id="example-table" class="">
+                                <div class="col-md-12 d-none" id="data-table">
+                                    <table id="example-table">
                                         <thead id="table-head"></thead>
                                         <tbody id="table-body"></tbody>
                                     </table>
@@ -64,12 +71,36 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <a href="{{route('report.detail')}}" class="btn btn-info"><i class="fa-solid fa-floppy-disk" style="color:white" title="Chi tiết phiếu lỗi"></i></a>
+                        <div class="card-footer" id="save-main">
+                            <a href="#" class="btn btn-info" data-toggle="modal" data-target="#modal-default2" title="Tạo phiếu bảo trì">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="modal-default2">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Nhập ghi chú phiếu bảo trì</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Mô tả thêm</label>
+                                <textarea id="main-description" class="form-control mb-3" placeholder="Nhập mô tả phiếu bảo trì" style=" height: 100px"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                            <button type="button" class="btn btn-success btn-save-main">Tạo phiếu</button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal -->
         </div>
     </section>
 </div>
@@ -84,10 +115,12 @@
         $('.select2bs4').select2({
             theme: 'bootstrap4'
         });
-
+        var branch_id = 0;
+        var building_id = 0;
+        var room_id = 0;
         // Khi chọn cơ sở
         $('#branch_id').on('change', function() {
-            var branch_id = $(this).val();
+            branch_id = $(this).val();
             $('#building_id').empty().append('<option value="0">---Chọn tòa nhà---</option>').prop('disabled', true);
             $('#room_id').empty().append('<option value="0">---Chọn phòng---</option>').prop('disabled', true);
             $('#table-head').empty();
@@ -105,11 +138,18 @@
                     }
                 });
             }
+            else{
+                $('#data-table').addClass('d-none');
+                $('#search-container').addClass('d-none');
+                $('#example-table').removeClass('table table-bordered table-hover');
+                building_id = 0;
+                room_id = 0;
+            }
         });
 
         // Khi chọn tòa nhà
         $('#building_id').on('change', function() {
-            var building_id = $(this).val();
+            building_id = $(this).val();
             $('#room_id').empty().append('<option value="0">---Chọn phòng---</option>').prop('disabled', true);
             $('#table-head').empty();
             $('#table-body').empty();
@@ -126,6 +166,12 @@
                     }
                 });
             }
+            else{
+                $('#data-table').addClass('d-none');
+                $('#example-table').removeClass('table table-bordered table-hover');
+                $('#search-container').addClass('d-none');
+                room_id = 0;
+            }
         });
 
         // Khi chọn phòng
@@ -133,72 +179,123 @@
             loadDevices(1);
         });
 
+        $('#search-button').on('click', function() {
+            loadDevices(1);
+        });
+
+        $('#search-input').on('input', function() {
+            if ($(this).val() === '') {
+                loadDevices(1);
+            }
+        });
+
         function loadDevices(page) {
-            var room_id = $('#room_id').val();
+            room_id = $('#room_id').val();
+            const searchTerm = $('#search-input').val();
             $('#table-body').empty();
             $('#table-head').empty();
-
             if (room_id > 0) {
+                $('#data-table').removeClass('d-none')
                 $('#example-table').addClass('table table-bordered table-hover');
+                $('#search-container').removeClass('d-none')
                 $.ajax({
                     url: '/use-unit/get-devices/' + room_id + '?page=' + page,
                     method: 'GET',
+                    data: {
+                        search: searchTerm
+                    },
                     success: function(data) {
-                        $('#table-head').append(`
-                            <tr>
-                                <th>#</th>
-                                <th>Hình ảnh</th>
-                                <th>Tên thiết bị</th>
-                                <th>Phân loại</th>
-                                <th>Số hiệu</th>
-                                <th>Thuộc bộ phận</th>
-                                <th>Chức năng</th>
-                            </tr>
-                        `);
+                        const devices = data.devices.data;
+                        const selectedDevices = data.selected_devices;
+                        $('#table-head').empty();
+                        $('#table-body').empty();
+                        if (devices.length > 0) {
+                            $('#table-head').append(`
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center" style="width:15%">Hình ảnh</th>
+                                    <th class="text-center" style="width:25%">Tên thiết bị</th>
+                                    <th class="text-center">Số hiệu</th>
+                                    <th class="text-center" style="width: 30%;">Mô tả lỗi</th>
+                                    <th class="text-center">Chức năng</th>
+                                </tr>
+                            `);
 
-                        let counter = 1;
-                        $.each(data.data, function(index, device) {
+                            devices.forEach((device, index) => {
+                                const isChecked = selectedDevices[device.device_id] ? 'checked' : '';
+                                const description = selectedDevices[device.device_id]?.description || '';
+                                $('#table-body').append(`
+                                    <tr>
+                                        <td style="text-align: center; vertical-align: middle">${index + 1}</td>
+                                        <td style="width:15%; text-align: center; vertical-align: middle"><img src="${device.image}" alt="" style="width: 80px; height: 80px"></td>
+                                        <td style="width: 25%; text-align: center; vertical-align: middle">${device.name}</td>
+                                        <td style="text-align: center; vertical-align: middle">${device.code}</td>
+                                        <td style="width: 30%">
+                                            <textarea class="form-control error-description" id="description_err-${device.device_id}" data-id="${device.device_id}" placeholder="Nhập mô tả lỗi">${description}</textarea>
+                                        </td>
+                                        <td style="text-align: center; vertical-align: middle">
+                                            <div class="icheck-success d-inline" style="transform: scale(1.5)">
+                                                <input type="checkbox" class="device-checkbox" id="checkboxSuccess-${device.device_id}" data-id="${device.device_id}" ${isChecked}>
+                                                <label for="checkboxSuccess-${device.device_id}"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `);
+                            });
+                        } else {
                             $('#table-body').append(`
                                 <tr>
-                                    <td>${counter++}</td>
-                                    <td><img src="${device.image}" alt="" style="width: 80px; height: 80px"></td>
-                                    <td>${device.name}</td>
-                                    <td>${device.type ? device.type.name : 'N/A'}</td>
-                                    <td>${device.code}</td>
-                                    <td>${device.unit ? device.unit.name : 'N/A'}</td>
-                                    <td>
-                                        <a href="#" class="btn btn-success btn-sm btn-add-report" data-id="${device.device_id}" title="Thêm vào phiếu báo hỏng">
-                                            <i class="fa-solid fa-plus"></i>
-                                        </a>
-                                    </td>
+                                    <td colspan="6" class="text-center text-danger">Không có thiết bị</td>
                                 </tr>
-                            `);  
+                            `);
+                        }
+
+                        devices.forEach(device => {
+                            const isChecked = selectedDevices[device.device_id] ? true : false;
+                            const textarea = $(`#description_err-${device.device_id}`);
+                            if (isChecked) {
+                                textarea.prop('disabled', true);
+                            }
+                        });
+
+                        $('.device-checkbox').change(function() {
+                            const deviceId = $(this).data('id');
+                            const textarea = $(`#description_err-${deviceId}`);
+
+                            if ($(this).is(':checked')) {
+                                if (textarea.val().trim() !== '') {
+                                    textarea.prop('disabled', true);
+                                }
+                            } else {
+                                textarea.prop('disabled', false);
+                                textarea.val('');
+                            }
                         });
 
                         // Hiển thị các nút phân trang
                         $('#pagination').empty();
                         $('#pagination').addClass('mt-3');
-                        if (data.last_page > 1) {
+                        if (data.devices.last_page > 1) {
                             let paginationHTML = '<ul class="pagination justify-content-end">';
 
-                            if (data.current_page > 1) {
+                            if (data.devices.current_page > 1) {
                                 paginationHTML += `
                                     <li class="page-item">
-                                        <a href="#" class="page-link" data-page="${data.current_page - 1}">Trước</a>
+                                        <a href="#" class="page-link" data-page="${data.devices.current_page - 1}">Trước</a>
                                     </li>`;
                             }
 
-                            for (let i = 1; i <= data.last_page; i++) {
+                            for (let i = 1; i <= data.devices.last_page; i++) {
                                 paginationHTML += `
-                                    <li class="page-item ${i == data.current_page ? 'active' : ''}">
+                                    <li class="page-item ${i == data.devices.current_page ? 'active' : ''}">
                                         <a href="#" class="page-link" data-page="${i}">${i}</a>
                                     </li>`;
                             }
 
-                            if (data.current_page < data.last_page) {
+                            if (data.devices.current_page < data.devices.last_page) {
                                 paginationHTML += `
                                     <li class="page-item">
-                                        <a href="#" class="page-link" data-page="${data.current_page + 1}">Sau</a>
+                                        <a href="#" class="page-link" data-page="${data.devices.current_page + 1}">Sau</a>
                                     </li>`;
                             }
 
@@ -208,10 +305,12 @@
                     }
                 });
             }
-            else{
+            else {
                 $('#example-table').removeClass('table table-bordered table-hover');
                 $('#pagination').empty();
                 $('#pagination').removeClass('mt-3');
+                $('#data-table').addClass('d-none');
+                $('#search-container').addClass('d-none');
             }
         }
 
@@ -220,30 +319,121 @@
             var page = $(this).data('page');
             loadDevices(page);
         });
-
     });
 </script>
 <script>
     $(document).on('click', '.btn-add-report', function(e) {
         e.preventDefault();
         var id = $(this).data('id');
+        var description = $('#description_err-'+id).val();
+
+        if (description.trim() === "") {
+            toastr.error("Vui lòng nhập mô tả lỗi trước khi thêm");
+            return;
+        }
         $.ajax({
             url: '/use-unit/add-to-report/' + id,
             type: 'POST',
             data: {
-                _token: '{{ csrf_token() }}'
+                _token: '{{ csrf_token() }}',
+                error:description
             },
             success: function(response) {
                 if (response.success) {
+                    $('#count-report').text(response.count);
                     toastr.success(response.message);
                 } else if (response.warning) {
                     toastr.warning(response.message);
+
                 } else if (response.danger) {
                     toastr.danger(response.message);
                 }
             },
             error: function() {
                 alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
+            }
+        });
+    });
+
+    $(document).on('change', '.device-checkbox', function () {
+        var deviceId = $(this).attr('id').split('-')[1];
+        var description = $('#description_err-' + deviceId).val();
+        
+        if ($(this).is(':checked')) {
+            if (description.trim() === "") {
+                toastr.error("Vui lòng nhập mô tả lỗi trước khi thêm");
+                $(this).prop('checked', false);
+                return;
+            }
+            
+            $.ajax({
+                url: '/use-unit/add-to-report/' + deviceId,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    error: description
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $('#count-report').text(response.count);
+                        toastr.success(response.message);
+                    } else if (response.warning) {
+                        toastr.warning(response.message);
+                        $('#description_err-' + deviceId).val('');
+                        $(this).prop('checked', false);
+                        $('#description_err-' + deviceId).prop('disabled', false);
+                    } else if (response.danger) {
+                        toastr.error(response.message);
+                    }
+                }.bind(this),
+                error: function () {
+                    alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
+                }
+            });
+        } else {
+            $.ajax({
+                url: '/use-unit/remove-report/' + deviceId,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $('#count-report').text(response.count);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function () {
+                    alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
+                }
+            });
+        }
+    });
+    $('body').on('click', '.btn-save-main', function(e) {
+        let mainDescription = $('#main-description').val();
+        $.ajax({
+            url: '/use-unit/save-maintenance',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                description: mainDescription
+            },
+            success: function(response) {
+                if (response.success) {
+                    toastr.success('Tạo phiếu bảo trì thành công!');
+                    $('#modal-default2').modal('hide');
+                    $('#count-report').text(response.count);
+                    $('.error-description').val('');
+                    $('.device-checkbox').prop('checked', false);
+                    $('.error-description').prop('disabled', false);
+                } else if (response.error) {
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+                alert('Có lỗi xảy ra: ' + xhr.responseText);
             }
         });
     });

@@ -97,9 +97,12 @@
                                             $role = 'Quản trị viên';
                                             break;
                                             case 2:
-                                            $role = 'Bộ phận phụ trách';
+                                            $role = 'Đơn vị sử dụng';
                                             break;
                                             case 3:
+                                            $role = 'Bộ phận phụ trách';
+                                            break;
+                                            case 4:
                                             $role = 'Kỹ thuật viên';
                                             break;
                                             default:

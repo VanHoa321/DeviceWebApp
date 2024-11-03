@@ -97,24 +97,12 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4">                                
+                                    <div class="col-md-12">                                
                                         <div class="form-group">
                                             <label>Tên tài khoản</label>
                                             <input type="text" name="user_name" class="form-control" placeholder="Nhập tên đăng nhập hệ thống">
                                         </div>                                                                        
-                                    </div>
-                                    <div class="col-md-4">                                
-                                        <div class="form-group">
-                                            <label>Mật khẩu</label>
-                                            <input type="password" name="password" id="password" class="form-control" placeholder="Nhập mật khẩu đăng nhập hệ thống">
-                                        </div>                                                                        
-                                    </div>
-                                    <div class="col-md-4">                                
-                                        <div class="form-group">
-                                            <label>Xác nhận mật khẩu</label>
-                                            <input type="password" name="confirm_password" class="form-control" placeholder="Nhập lại mật khẩu đăng nhập">
-                                        </div>                                                                        
-                                    </div>
+                                    </div>                                    
                                 </div>
                             </div>
                             <div class="card-footer">
@@ -180,14 +168,6 @@
                 user_name: {
                     required: "Tên tài khoản không được để trống",
                     minlength: "Tên tài khoản phải có ít nhất {0} ký tự"
-                },
-                password: {
-                    required: "Mật khẩu không được để trống",
-                    minlength: "Mật khẩu phải có ít nhất {0} ký tự"
-                },
-                confirm_password: {
-                    required: "Xác nhận mật khẩu không được để trống",
-                    equalTo: "Mật khẩu xác nhận không khớp"
                 }
             },
             errorElement: 'span',

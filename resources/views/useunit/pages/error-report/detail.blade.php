@@ -134,7 +134,6 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-
         $('body').on('click', '.btn-delete-report', function(e) {
             e.preventDefault();
             const id = $(this).data('id');

@@ -25,7 +25,8 @@ class MaintenanceController extends Controller
 
     public function detail($id){
         $detail = MaintenanceDetail::with('user', 'device')->where('detail_id', $id)->first();
-        return view("useunit.pages.maintenance.detail",compact("detail"));
+        $main_id = $detail->maintenance_id;
+        return view("useunit.pages.maintenance.detail",compact("detail", "main_id"));
     }
 
     public function cancel($id){
