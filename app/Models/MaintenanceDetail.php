@@ -30,4 +30,8 @@ class MaintenanceDetail extends Model
     {
         return $this->belongsTo(Device::class, 'device_id');
     }
+
+    public function maintenance(){
+        return $this->belongsTo(Maintenance::class, 'maintenance_id');
+    }
 }

@@ -36,7 +36,7 @@
                                     <select name="building_id" class="form-control select2bs4">
                                         <option value="0">---Chọn tòa nhà---</option>
                                         @foreach($listBuildings as $item)
-                                            <option value="{{ $item->building_id }}" {{ $item->building_id == $edit->building_id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                            <option value="{{ $item->building_id }}" {{ $item->building_id == $edit->building_id ? 'selected' : '' }}>{{$item->name}}, {{$item->branch->branch_name}}</option>
                                         @endforeach
                                     </select>
                                 </div>

@@ -17,6 +17,15 @@
                 </div>
             </div>
         </div>
+        @if ($errors->any())
+            <div style="position: fixed; top: 70px; right: 16px; width: auto; z-index: 999" id="myAlert">
+                @foreach ($errors->all() as $error)
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-check2 text-danger"></i> {{ $error }}
+                    </div>
+                @endforeach
+            </div>
+        @endif        
     </section>
 
     <section class="content">
@@ -29,11 +38,11 @@
                             <div class="card-body">                                
                                 <div class="form-group">
                                     <label>Tên phân loại thiết bị</label>
-                                    <input type="text" name="name" class="form-control" placeholder="Nhập tên loại thiết bị">
+                                    <input type="text" name="name" class="form-control" placeholder="Nhập tên loại thiết bị" value="{{ old('name') }}">
                                 </div>                                      
                                 <div class="form-group">
                                     <label asp-for="description">Mô tả thêm</label>
-                                    <textarea class="form-control mb-3" name="description" placeholder="Nhập mô tả thêm" style=" height: 100px"></textarea>
+                                    <textarea class="form-control mb-3" name="description" placeholder="Nhập mô tả thêm" style=" height: 100px">{{ old('description') }}</textarea>
                                 </div>
                             </div>
                             <div class="card-footer">
@@ -86,6 +95,10 @@
             $('.select2bs4').select2({
                 theme: 'bootstrap4'
             })
+
+            setTimeout(function() {
+                $("#myAlert").fadeOut(500);
+            },3500);
         });
     </script>
 @endsection

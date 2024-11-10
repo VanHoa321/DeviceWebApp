@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Maintenance;
 use App\Models\MaintenanceDetail;
 use App\Models\MaintenanceReview;
+use App\Models\MaintenanceFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +27,8 @@ class MaintenanceController extends Controller
     public function detail($id){
         $detail = MaintenanceDetail::with('user', 'device')->where('detail_id', $id)->first();
         $main_id = $detail->maintenance_id;
-        return view("useunit.pages.maintenance.detail",compact("detail", "main_id"));
+        $files = MaintenanceFile::where('detail_id', $detail->detail_id)->get();
+        return view("useunit.pages.maintenance.detail",compact("detail", "main_id", "files"));
     }
 
     public function cancel($id){

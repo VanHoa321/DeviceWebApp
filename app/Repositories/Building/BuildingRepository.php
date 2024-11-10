@@ -11,7 +11,7 @@ class BuildingRepository implements BuildingInterface {
     }
 
     public function all() {
-        return $this->building::with('branch')->get();
+        return $this->building::with('branch')->orderBy('building_id', 'desc')->get();
     }
 
     public function find($id) {
@@ -23,9 +23,9 @@ class BuildingRepository implements BuildingInterface {
     }
 
     public function update($id, $data) {
-        $buildings = $this->building->find($id);
-        if($buildings){
-            $buildings->update($data);
+        $building = $this->building->find($id);
+        if($building){
+            $building->update($data);
         }
     }
 

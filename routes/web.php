@@ -16,6 +16,7 @@ use App\Http\Controllers\UseUnit\MaintenanceController;
 use App\Http\Controllers\ManagerUnit\HomeManagerUnitController;
 use App\Http\Controllers\ManagerUnit\ManagerReportController;
 use App\Http\Controllers\Technician\HomeTechnicianController;
+use App\Http\Controllers\Technician\TaskController;
 
 Route::get('/',[AccountController::class, "login"])->name("index");
 
@@ -130,5 +131,10 @@ Route::prefix('manager-unit')->middleware("manager-unit")->group(function () {
 
 Route::prefix('technician')->middleware("technician")->group(function () {
     Route::get('/trang-chu', [HomeTechnicianController::class, 'index']) ->name('homeT.index');
+
+    //Task
+    Route::get('/danh-sach-cong-viec', [TaskController::class, 'index']) ->name('tech.task');
+    Route::get('/chi-tiet-cong-viec/{id}', [TaskController::class, 'detail']) ->name('tech.detail');
+    Route::post('/updateTask', [TaskController::class, 'updateTask']);
 });
 

@@ -223,7 +223,7 @@
     </script>
     <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
     <script>
-        $('#lfm').filemanager('image', {
+        $('#lfm').filemanager('file', {
             prefix: '/files-manager'
         });
         $(document).ready(function() {
@@ -276,15 +276,16 @@
             } else {
                 $('#holder').attr('src', '/storage/photos/1/Device/no-image.jpg');
             }
-            $('#lfm').filemanager('image');
+            $('#lfm').filemanager('file');//đổi qua file nếu muốn upload video
             $('#lfm').on('click', function() {
                 var route_prefix = '/files-manager';
-                window.open(route_prefix + '?type=image', 'FileManager', 'width=700,height=400');
+                window.open(route_prefix + '?type=file', 'FileManager', 'width=700,height=400');
                 window.SetUrl = function(items) {
                     var url = items[0].url;
                     $('#holder').attr('src', url);
                     $('#thumbnail').val(url);
-                };
+                    $('#thumbnail').trigger('change');
+                };               
             });
         });
     </script>

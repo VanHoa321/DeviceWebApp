@@ -50,8 +50,8 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="description">Mô tả thêm</label>
-                                    <textarea class="form-control mb-3" name="description" placeholder="Nhập mô tả thêm" style=" height: 100px">{{ old('description') }}</textarea>
+                                    <label>Mô tả thêm</label>
+                                    <textarea class="form-control mb-3" name="description" placeholder="Nhập mô tả thêm" style="height: 100px">{{ old('description') }}</textarea>
                                 </div>
                             </div>
                             <div class="card-footer">

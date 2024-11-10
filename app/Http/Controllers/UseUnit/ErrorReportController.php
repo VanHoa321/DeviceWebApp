@@ -16,6 +16,7 @@ use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendMaintenanceNotification;
 
 class ErrorReportController extends Controller
 {
@@ -185,7 +186,7 @@ class ErrorReportController extends Controller
                 $maintenanceDetail->user_id = Auth::user()->user_id;
                 $maintenanceDetail->device_id = $device_id;
                 $maintenanceDetail->status = 1;
-                $maintenanceDetail->expense = 0;
+                $maintenanceDetail->expense = null;
                 $maintenanceDetail->error_description = $report['error'];
                 $maintenanceDetail->save();
 
@@ -202,22 +203,12 @@ class ErrorReportController extends Controller
         session()->forget('reports');
         session()->forget('selected_devices');
 
-        //Gửi thông báo
+        //Gửi thông báo bằng job sau 10s
         $users = User::where('role_id', 3)->get();
         $sender = User::find(Auth::user()->user_id);
-        $created_at = now();
         $deviceListString = implode("\n", $deviceList);
-        $message = 'Có một đơn bảo trì mới từ ' . $sender->full_name . ' chờ được xác nhận. Danh sách thiết bị bao gồm:' . "\n" . $deviceListString;
-        foreach ($users as $user) {
-            Notification::create([
-                'send_id' => $sender->user_id,
-                'receiver_id' => $user->user_id,
-                'message' => $message,
-                'created_at' => $created_at,
-                'is_read' => false
-            ]);
-            Mail::to('vanhoa12092003@gmail.com')->send(new ReportDevice($sender ,$maintenance, $deviceReports));
-        }
+        SendMaintenanceNotification::dispatch($sender, $maintenance, $deviceReports, $deviceListString)->delay(now()->addSeconds(10));
+        
         return response()->json(['success' => true, 'message' => 'Tạo phiếu bảo trì thành công', 'count' => 0]);
     }
 
@@ -249,5 +240,4 @@ class ErrorReportController extends Controller
             'selected_devices' => $selectedDevices
         ]);
     }
-
 }

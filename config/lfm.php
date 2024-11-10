@@ -60,6 +60,11 @@ return [
                 'image/gif',
                 'application/pdf',
                 'text/plain',
+                'video/mp4', 
+                'video/x-msvideo', 
+                'video/x-flv', 
+                'video/x-matroska', 
+                'video/x-ms-wmv',
             ],
         ],
         'image' => [

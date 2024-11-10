@@ -17,6 +17,15 @@
                 </div>
             </div>
         </div>
+        @if ($errors->any())
+            <div style="position: fixed; top: 70px; right: 16px; width: auto; z-index: 999" id="myAlert">
+                @foreach ($errors->all() as $error)
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-check2 text-danger"></i> {{ $error }}
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </section>
 
     <section class="content">
@@ -36,7 +45,7 @@
                                     <select name="building_id" class="form-control select2bs4">
                                         <option value="0">---Chọn tòa nhà---</option>
                                         @foreach($listBuildings as $item);
-                                        <option value="{{$item->building_id}}">{{$item->name}}</option>
+                                        <option value="{{$item->building_id}}">{{$item->name}}, {{$item->branch->branch_name}}</option>
                                         @endforeach
                                     </select>
                                 </div>

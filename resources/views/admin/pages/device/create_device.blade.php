@@ -17,6 +17,15 @@
                 </div>
             </div>
         </div>
+        @if ($errors->any())
+            <div style="position: fixed; top: 70px; right: 16px; width: auto; z-index: 999" id="myAlert">
+                @foreach ($errors->all() as $error)
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-check2 text-danger"></i> {{ $error }}
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </section>
 
     <section class="content">
@@ -38,38 +47,38 @@
                                                     <i class="fa-solid fa-image"></i> Chọn ảnh
                                                 </a>
                                             </span>
-                                            <input id="thumbnail" class="form-control" type="hidden" name="image">                                                                             
+                                            <input id="thumbnail" class="form-control" type="hidden" name="image" value="{{old('image')}}">                                                                             
                                         </div>
                                     </div>
                                     <div class="col-md-8">
                                         <div class="form-group">
                                             <label>Tên thiết bị</label>
-                                            <input type="text" name="name" class="form-control" placeholder="Nhập tên loại thiết bị">
+                                            <input type="text" name="name" class="form-control" placeholder="Nhập tên loại thiết bị" value="{{old('name')}}">
                                         </div>  
                                         <div class="form-group">
                                             <label>Tên phân loại</label>
                                             <select name="type_id" class="form-control select2bs4">
-                                                <option value="0">---Chọn phân loại---</option>
+                                                <option value="0" {{ old('type_id') == 0 ? 'selected' : '' }}>---Chọn phân loại---</option>
                                                 @foreach($types as $item);
-                                                <option value="{{$item->type_id}}">{{$item->name}}</option>
+                                                <option value="{{$item->type_id}}" {{ old('type_id') == $item->type_id ? 'selected' : '' }}>{{$item->name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <label>Thuộc phòng</label>
                                             <select name="room_id" class="form-control select2bs4">
-                                                <option value="0">---Chọn phòng---</option>
+                                                <option value="0" {{ old('room_id') == 0 ? 'selected' : '' }}>---Chọn phòng---</option>
                                                 @foreach($rooms as $item);
-                                                <option value="{{$item->room_id}}">{{$item->name}}</option>
+                                                <option value="{{$item->room_id}}" {{ old('room_id') == $item->room_id ? 'selected' : '' }}>{{$item->name}}, {{$item->building->name}}, {{$item->building->branch->branch_name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <label>Đơn vị quản lý</label>
                                             <select name="unit_id" class="form-control select2bs4">
-                                                <option value="0">---Chọn đơn vị---</option>
+                                                <option value="0" {{ old('unit_id') == 0 ? 'selected' : '' }}>---Chọn đơn vị---</option>
                                                 @foreach($units as $item);
-                                                <option value="{{$item->unit_id}}">{{$item->name}}</option>
+                                                <option value="{{$item->unit_id}}" {{ old('unit_id') == $item->unit_id ? 'selected' : '' }}>{{$item->name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -77,13 +86,13 @@
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label>Số hiệu</label>
-                                                    <input type="text" name="code" class="form-control" placeholder="Nhập số hiệu thiết bị">
+                                                    <input type="text" name="code" class="form-control" placeholder="Nhập số hiệu thiết bị" value="{{old('code')}}">
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label>Năm sử dụng</label>
-                                                    <input type="date" name="years" class="form-control" placeholder="Nhập năm sử dụng thiết bị">
+                                                    <input type="date" name="years" class="form-control" placeholder="Nhập năm sử dụng thiết bị" value="{{old('years')}}">
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -162,6 +171,10 @@
             $('.select2bs4').select2({
                 theme: 'bootstrap4'
             })
+
+            setTimeout(function() {
+                $("#myAlert").fadeOut(500);
+            },3500);
         });
     </script>
 @endsection

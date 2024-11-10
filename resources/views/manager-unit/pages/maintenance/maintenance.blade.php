@@ -33,9 +33,9 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Thiết bị</th>
+                                        <th>Số hiệu</th>
                                         <th>Người sửa</th>
                                         <th>Tên người sửa</th>
-                                        <th>Chi phí</th>
                                         <th>Trạng thái</th>                                      
                                         <th>Chức năng</th>
                                     </tr>
@@ -48,6 +48,7 @@
                                     <tr>
                                         <td>{{ $counter++ }}</td>
                                         <td><img src="{{ $items->device->image }}" alt="" style="width: 80px; height: 80px"></td>
+                                        <td>{{ $items->device->code }}</td>
                                         @if($items->status == 1 || $items->status == 2)
                                             <td><span class="text-danger">Chưa phân công</span></td>
                                             <td><span class="text-danger">Chưa phân công</span></td>
@@ -55,7 +56,6 @@
                                             <td><img src="{{ $items->user->avatar }}" alt="" style="width: 80px; height: 80px"></td>
                                             <td>{{ $items->user->full_name }}</td>
                                         @endif
-                                        <td>{{ $items->expense }} <sup>đ</sup></td>
                                         <td id="status-{{ $items->detail_id }}">
                                             @switch($items->status)
                                                 @case(1)
@@ -205,7 +205,10 @@
                         toastr.error(response.message);
                     }
                 },
-                error: function () {
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("Error details:", jqXHR);
+                    console.log("Text status:", textStatus);
+                    console.log("Error thrown:", errorThrown);
                     toastr.error('Đã xảy ra lỗi');
                 }
             });

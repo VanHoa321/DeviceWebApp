@@ -37,17 +37,14 @@ class BuildingsController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50|unique:buildings,name',
             'branch_id' => 'required|int',
-            'description' => 'required|string|max:255',
+            'description' => 'max:255',
         ], [
             'name.required' => 'Tên tòa nhà không được để trống',
             'name.unique' => 'Tên tòa nhà đã tồn tại',
-            'name.max' => 'Tên tòa nhà không quá 50 ký tự.',
-       
+            'name.max' => 'Tên tòa nhà không quá 50 ký tự.',      
             'branch_id.required' => 'Thông tin là bắt buộc.',
-
             'description.max' => 'Mô tả thêm không quá 255 ký tự',
         ]);
-
         if ($validator->fails()) {
             return back()
                 ->withErrors($validator)
@@ -73,6 +70,23 @@ class BuildingsController extends Controller
 
     public function update(Request $request, $id)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:50|unique:buildings,name,' . $id . ',building_id',
+            'branch_id' => 'required|int',
+            'description' => 'max:255',
+        ], [
+            'name.required' => 'Tên tòa nhà không được để trống',
+            'name.unique' => 'Tên tòa nhà đã tồn tại',
+            'name.max' => 'Tên tòa nhà không quá 50 ký tự.',      
+            'branch_id.required' => 'Thông tin là bắt buộc.',
+            'description.max' => 'Mô tả thêm không quá 255 ký tự',
+        ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput();
+        }
         $data = [
             "name"=> $request->name,
             "branch_id"=> $request->branch_id,

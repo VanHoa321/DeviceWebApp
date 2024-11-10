@@ -109,7 +109,7 @@
                             $('#dtype-'+id).remove();                           
                         },
                         error: function(xhr) {
-                            toastr.error('Có lỗi khi xóa phòng');
+                            toastr.error('Có lỗi khi xóa phân loại thiết bị');
                         }
                     });
                 }

@@ -60,7 +60,7 @@
                                             <select name="room_id" class="form-control select2bs4">
                                                 <option value="0">---Chọn phòng---</option>
                                                 @foreach($rooms as $item);
-                                                <option value="{{$item->room_id}}" {{ $item->room_id == $device->room_id ? 'selected' : '' }}>{{$item->name}}</option>
+                                                <option value="{{$item->room_id}}" {{ $item->room_id == $device->room_id ? 'selected' : '' }}>{{$item->name}}, {{$item->building->name}}, {{$item->building->branch->branch_name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
