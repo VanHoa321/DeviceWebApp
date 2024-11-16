@@ -21,7 +21,7 @@ class MaintenanceController extends Controller
         $review_id = $maintenance->review_id;
         $review = MaintenanceReview::find($review_id);
         $maintenanceDetails = MaintenanceDetail::with('user', 'device')->where('maintenance_id', $id)->orderBy("detail_id","desc")->get();
-        return view("useunit.pages.maintenance.maintenance",compact("maintenanceDetails", 'review'));
+        return view("useunit.pages.maintenance.maintenance",compact("maintenanceDetails", 'review', 'maintenance'));
     }
 
     public function detail($id){
@@ -39,5 +39,21 @@ class MaintenanceController extends Controller
             return response()->json(['success' => true, 'message' => 'Đã hủy phiếu bảo trì']);
         }
         return response()->json(['success'=> false, 'message'=> 'Không tìm thấy phiếu bảo trì']);
+    }
+
+    public function saveReview(Request $request)
+    {
+        $review = MaintenanceReview::where('review_id', $request->review_id)->first();
+        if ($review) {
+            $review->quality = $request->quality;
+            $review->attitude = $request->attitude;
+            $review->response = $request->response;
+            $review->description = $request->description;
+            $review->status = 1;
+            $review->save();
+            return response()->json(['success' => true, 'message' => 'Đánh giá công việc thành công']);
+        }else{
+            return response()->json(['success' => false, 'message' => 'Đánh giá công việc thất bại']);
+        }
     }
 }

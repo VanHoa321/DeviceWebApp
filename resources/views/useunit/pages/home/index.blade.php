@@ -1,557 +1,494 @@
 @extends('master_layout')
 @section('title', 'Trang chủ')
 @section('content')
-
-<div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0">Trang chủ</h1>
+<style>
+    .content-wrapper {
+        min-height: 100%;
+        height: auto;
+    }
+</style>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Trang chủ</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Bộ phận sử dụng</a></li>
+                            <li class="breadcrumb-item active">Trang chủ</li>
+                        </ol>
+                    </div>
                 </div>
             </div>
-        </div>
-        @if(Session::has('messenge') && is_array(Session::get('messenge')))
-            @php
-                $messenge = Session::get('messenge');
-            @endphp
-            @if(isset($messenge['style']) && isset($messenge['msg']))
-                <div class="alert alert-{{ $messenge['style'] }}" role="alert" style="position: fixed; top: 70px; right: 16px; width: auto; z-index: 999" id="myAlert">
-                    <i class="bi bi-check2 text-{{ $messenge['style'] }}"></i>{{ $messenge['msg'] }}
-                </div>
+            @if(Session::has('messenge') && is_array(Session::get('messenge')))
                 @php
-                    Session::forget('messenge');
+                    $messenge = Session::get('messenge');
                 @endphp
+                @if(isset($messenge['style']) && isset($messenge['msg']))
+                    <div class="alert alert-{{ $messenge['style'] }}" role="alert" style="position: fixed; top: 70px; right: 16px; width: auto; z-index: 999" id="myAlert">
+                        <i class="bi bi-check2 text-{{ $messenge['style'] }}"></i>{{ $messenge['msg'] }}
+                    </div>
+                    @php
+                    Session::forget('messenge');
+                    @endphp
+                @endif
             @endif
-        @endif
-    </div>
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3>150</h3>
-                            <p>New Orders</p>
+        </section>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-warning">
+                            <div class="inner text-white">
+                                <h3>Báo hỏng</h3>
+                                <p>Tạo đơn bảo trì thiết bị</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <a href="{{route('report.index')}}" class="small-box-footer"><span style="color:white">Chi tiết <i class="fas fa-arrow-circle-right"></i></span></a>
                         </div>
-                        <div class="icon">
-                            <i class="ion ion-bag"></i>
+                    </div>
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3>{{$maintenanceCount}}</h3>
+                                <p>Đơn bảo trì đã tạo</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
+                            <a href="{{route('main.index')}}" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-danger">
+                            <div class="inner">
+                                <h3>{{$deviceCount}}</h3>
+                                <p>Thiết bị đã báo hỏng</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-laptop"></i>
+                            </div>
+                            <a href="{{route('main.index')}}" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>                   
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>{{$completeCount}}</h3>
+                                <p>Đơn bảo trì thành công</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-pie-graph"></i>
+                            </div>
+                            <a href="{{route('main.index')}}" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3>53<sup style="font-size: 20px">%</sup></h3>
-                            <p>Bounce Rate</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-stats-bars"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-warning">
-                        <div class="inner">
-                            <h3>44</h3>
-                            <p>User Registrations</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-person-add"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-danger">
-                        <div class="inner">
-                            <h3>65</h3>
-                            <p>Unique Visitors</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-pie-graph"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <section class="col-lg-7 connectedSortable">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-chart-pie mr-1"></i>
-                                Sales
-                            </h3>
-                            <div class="card-tools">
-                                <ul class="nav nav-pills ml-auto">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#sales-chart" data-toggle="tab">Donut</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="tab-content p-0">
-                                <div class="chart tab-pane active" id="revenue-chart"
-                                     style="position: relative; height: 300px;">
-                                    <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>
-                                </div>
-                                <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
-                                    <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card direct-chat direct-chat-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Direct Chat</h3>
-
-                            <div class="card-tools">
-                                <span title="3 New Messages" class="badge badge-primary">3</span>
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
-                                    <i class="fas fa-comments"></i>
-                                </button>
-                                <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="direct-chat-messages">
-                                <div class="direct-chat-msg">
-                                    <div class="direct-chat-infos clearfix">
-                                        <span class="direct-chat-name float-left">Alexander Pierce</span>
-                                        <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                                    </div>
-                                    <img class="direct-chat-img" src="~/admin/assets/dist/img/user1-128x128.jpg" alt="message user image">
-                                    <div class="direct-chat-text">
-                                        Is this template really for free? That's unbelievable!
-                                    </div>
-                                </div>
-                                <div class="direct-chat-msg right">
-                                    <div class="direct-chat-infos clearfix">
-                                        <span class="direct-chat-name float-right">Sarah Bullock</span>
-                                        <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
-                                    </div>
-                                    <img class="direct-chat-img" src="~/admin/assets/dist/img/user3-128x128.jpg" alt="message user image">
-                                    <div class="direct-chat-text">
-                                        You better believe it!
-                                    </div>
-                                </div>
-                                <div class="direct-chat-msg">
-                                    <div class="direct-chat-infos clearfix">
-                                        <span class="direct-chat-name float-left">Alexander Pierce</span>
-                                        <span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
-                                    </div>
-                                    <img class="direct-chat-img" src="~/admin/assets/dist/img/user1-128x128.jpg" alt="message user image">
-                                    <div class="direct-chat-text">
-                                        Working with AdminLTE on a great new app! Wanna join?
-                                    </div>
-                                </div>
-                                <div class="direct-chat-msg right">
-                                    <div class="direct-chat-infos clearfix">
-                                        <span class="direct-chat-name float-right">Sarah Bullock</span>
-                                        <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
-                                    </div>
-                                    <img class="direct-chat-img" src="~/admin/assets/dist/img/user3-128x128.jpg" alt="message user image">
-                                    <div class="direct-chat-text">
-                                        I would love to.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="direct-chat-contacts">
-                                <ul class="contacts-list">
-                                    <li>
-                                        <a href="#">
-                                            <img class="contacts-list-img" src="~/admin/assets/dist/img/user1-128x128.jpg" alt="User Avatar">
-
-                                            <div class="contacts-list-info">
-                                                <span class="contacts-list-name">
-                                                    Count Dracula
-                                                    <small class="contacts-list-date float-right">2/28/2015</small>
-                                                </span>
-                                                <span class="contacts-list-msg">How have you been? I was...</span>
-                                            </div>
-                                            <!-- /.contacts-list-info -->
-                                        </a>
-                                    </li>
-                                    <!-- End Contact Item -->
-                                    <li>
-                                        <a href="#">
-                                            <img class="contacts-list-img" src="~/admin/assets/dist/img/user7-128x128.jpg" alt="User Avatar">
-
-                                            <div class="contacts-list-info">
-                                                <span class="contacts-list-name">
-                                                    Sarah Doe
-                                                    <small class="contacts-list-date float-right">2/23/2015</small>
-                                                </span>
-                                                <span class="contacts-list-msg">I will be waiting for...</span>
-                                            </div>
-                                            <!-- /.contacts-list-info -->
-                                        </a>
-                                    </li>
-                                    <!-- End Contact Item -->
-                                    <li>
-                                        <a href="#">
-                                            <img class="contacts-list-img" src="~/admin/assets/dist/img/user3-128x128.jpg" alt="User Avatar">
-
-                                            <div class="contacts-list-info">
-                                                <span class="contacts-list-name">
-                                                    Nadia Jolie
-                                                    <small class="contacts-list-date float-right">2/20/2015</small>
-                                                </span>
-                                                <span class="contacts-list-msg">I'll call you back at...</span>
-                                            </div>
-                                            <!-- /.contacts-list-info -->
-                                        </a>
-                                    </li>
-                                    <!-- End Contact Item -->
-                                    <li>
-                                        <a href="#">
-                                            <img class="contacts-list-img" src="~/admin/assets/dist/img/user5-128x128.jpg" alt="User Avatar">
-
-                                            <div class="contacts-list-info">
-                                                <span class="contacts-list-name">
-                                                    Nora S. Vans
-                                                    <small class="contacts-list-date float-right">2/10/2015</small>
-                                                </span>
-                                                <span class="contacts-list-msg">Where is your new...</span>
-                                            </div>
-                                            <!-- /.contacts-list-info -->
-                                        </a>
-                                    </li>
-                                    <!-- End Contact Item -->
-                                    <li>
-                                        <a href="#">
-                                            <img class="contacts-list-img" src="~/admin/assets/dist/img/user6-128x128.jpg" alt="User Avatar">
-
-                                            <div class="contacts-list-info">
-                                                <span class="contacts-list-name">
-                                                    John K.
-                                                    <small class="contacts-list-date float-right">1/27/2015</small>
-                                                </span>
-                                                <span class="contacts-list-msg">Can I take a look at...</span>
-                                            </div>
-                                            <!-- /.contacts-list-info -->
-                                        </a>
-                                    </li>
-                                    <!-- End Contact Item -->
-                                    <li>
-                                        <a href="#">
-                                            <img class="contacts-list-img" src="~/admin/assets/dist/img/user8-128x128.jpg" alt="User Avatar">
-
-                                            <div class="contacts-list-info">
-                                                <span class="contacts-list-name">
-                                                    Kenneth M.
-                                                    <small class="contacts-list-date float-right">1/4/2015</small>
-                                                </span>
-                                                <span class="contacts-list-msg">Never mind I found...</span>
-                                            </div>
-                                            <!-- /.contacts-list-info -->
-                                        </a>
-                                    </li>
-                                    <!-- End Contact Item -->
-                                </ul>
-                                <!-- /.contacts-list -->
-                            </div>
-                            <!-- /.direct-chat-pane -->
-                        </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer">
-                            <form action="#" method="post">
-                                <div class="input-group">
-                                    <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-                                    <span class="input-group-append">
-                                        <button type="button" class="btn btn-primary">Send</button>
-                                    </span>
-                                </div>
-                            </form>
-                        </div>
-                        <!-- /.card-footer-->
-                    </div>
-                    <!--/.direct-chat -->
-                    <!-- TO DO List -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="ion ion-clipboard mr-1"></i>
-                                To Do List
-                            </h3>
-
-                            <div class="card-tools">
-                                <ul class="pagination pagination-sm">
-                                    <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
-                                    <li class="page-item"><a href="#" class="page-link">1</a></li>
-                                    <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                    <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                    <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <ul class="todo-list" data-widget="todo-list">
-                                <li>
-                                    <!-- drag handle -->
-                                    <span class="handle">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </span>
-                                    <!-- checkbox -->
-                                    <div class="icheck-primary d-inline ml-2">
-                                        <input type="checkbox" value="" name="todo1" id="todoCheck1">
-                                        <label for="todoCheck1"></label>
-                                    </div>
-                                    <!-- todo text -->
-                                    <span class="text">Design a nice theme</span>
-                                    <!-- Emphasis label -->
-                                    <small class="badge badge-danger"><i class="far fa-clock"></i> 2 mins</small>
-                                    <!-- General tools such as edit or delete-->
-                                    <div class="tools">
-                                        <i class="fas fa-edit"></i>
-                                        <i class="fas fa-trash-o"></i>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="handle">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </span>
-                                    <div class="icheck-primary d-inline ml-2">
-                                        <input type="checkbox" value="" name="todo2" id="todoCheck2" checked>
-                                        <label for="todoCheck2"></label>
-                                    </div>
-                                    <span class="text">Make the theme responsive</span>
-                                    <small class="badge badge-info"><i class="far fa-clock"></i> 4 hours</small>
-                                    <div class="tools">
-                                        <i class="fas fa-edit"></i>
-                                        <i class="fas fa-trash-o"></i>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="handle">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </span>
-                                    <div class="icheck-primary d-inline ml-2">
-                                        <input type="checkbox" value="" name="todo3" id="todoCheck3">
-                                        <label for="todoCheck3"></label>
-                                    </div>
-                                    <span class="text">Let theme shine like a star</span>
-                                    <small class="badge badge-warning"><i class="far fa-clock"></i> 1 day</small>
-                                    <div class="tools">
-                                        <i class="fas fa-edit"></i>
-                                        <i class="fas fa-trash-o"></i>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="handle">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </span>
-                                    <div class="icheck-primary d-inline ml-2">
-                                        <input type="checkbox" value="" name="todo4" id="todoCheck4">
-                                        <label for="todoCheck4"></label>
-                                    </div>
-                                    <span class="text">Let theme shine like a star</span>
-                                    <small class="badge badge-success"><i class="far fa-clock"></i> 3 days</small>
-                                    <div class="tools">
-                                        <i class="fas fa-edit"></i>
-                                        <i class="fas fa-trash-o"></i>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="handle">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </span>
-                                    <div class="icheck-primary d-inline ml-2">
-                                        <input type="checkbox" value="" name="todo5" id="todoCheck5">
-                                        <label for="todoCheck5"></label>
-                                    </div>
-                                    <span class="text">Check your messages and notifications</span>
-                                    <small class="badge badge-primary"><i class="far fa-clock"></i> 1 week</small>
-                                    <div class="tools">
-                                        <i class="fas fa-edit"></i>
-                                        <i class="fas fa-trash-o"></i>
-                                    </div>
-                                </li>
-                                <li>
-                                    <span class="handle">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </span>
-                                    <div class="icheck-primary d-inline ml-2">
-                                        <input type="checkbox" value="" name="todo6" id="todoCheck6">
-                                        <label for="todoCheck6"></label>
-                                    </div>
-                                    <span class="text">Let theme shine like a star</span>
-                                    <small class="badge badge-secondary"><i class="far fa-clock"></i> 1 month</small>
-                                    <div class="tools">
-                                        <i class="fas fa-edit"></i>
-                                        <i class="fas fa-trash-o"></i>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer clearfix">
-                            <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add item</button>
-                        </div>
-                    </div>
-                    <!-- /.card -->
-                </section>
-                <!-- /.Left col -->
-                <!-- right col (We are only adding the ID to make the widgets sortable)-->
-                <section class="col-lg-5 connectedSortable">
-
-                    <!-- Map card -->
-                    <div class="card bg-gradient-primary">
-                        <div class="card-header border-0">
-                            <h3 class="card-title">
-                                <i class="fas fa-map-marker-alt mr-1"></i>
-                                Visitors
-                            </h3>
-                            <!-- card tools -->
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-primary btn-sm daterange" title="Date range">
-                                    <i class="far fa-calendar-alt"></i>
-                                </button>
-                                <button type="button" class="btn btn-primary btn-sm" data-card-widget="collapse" title="Collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                            <!-- /.card-tools -->
-                        </div>
-                        <div class="card-body">
-                            <div id="world-map" style="height: 250px; width: 100%;"></div>
-                        </div>
-                        <!-- /.card-body-->
-                        <div class="card-footer bg-transparent">
-                            <div class="row">
-                                <div class="col-4 text-center">
-                                    <div id="sparkline-1"></div>
-                                    <div class="text-white">Visitors</div>
-                                </div>
-                                <!-- ./col -->
-                                <div class="col-4 text-center">
-                                    <div id="sparkline-2"></div>
-                                    <div class="text-white">Online</div>
-                                </div>
-                                <!-- ./col -->
-                                <div class="col-4 text-center">
-                                    <div id="sparkline-3"></div>
-                                    <div class="text-white">Sales</div>
-                                </div>
-                                <!-- ./col -->
-                            </div>
-                            <!-- /.row -->
-                        </div>
-                    </div>
-                    <!-- /.card -->
-                    <!-- solid sales graph -->
-                    <div class="card bg-gradient-info">
-                        <div class="card-header border-0">
-                            <h3 class="card-title">
-                                <i class="fas fa-th mr-1"></i>
-                                Sales Graph
-                            </h3>
-
-                            <div class="card-tools">
-                                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <canvas class="chart" id="line-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                        </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer bg-transparent">
-                            <div class="row">
-                                <div class="col-4 text-center">
-                                    <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60"
-                                           data-fgColor="#39CCCC">
-
-                                    <div class="text-white">Mail-Orders</div>
-                                </div>
-                                <!-- ./col -->
-                                <div class="col-4 text-center">
-                                    <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60"
-                                           data-fgColor="#39CCCC">
-
-                                    <div class="text-white">Online</div>
-                                </div>
-                                <!-- ./col -->
-                                <div class="col-4 text-center">
-                                    <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60"
-                                           data-fgColor="#39CCCC">
-
-                                    <div class="text-white">In-Store</div>
-                                </div>
-                                <!-- ./col -->
-                            </div>
-                            <!-- /.row -->
-                        </div>
-                        <!-- /.card-footer -->
-                    </div>
-                    <!-- /.card -->
-                    <!-- Calendar -->
-                    <div class="card bg-gradient-success">
-                        <div class="card-header border-0">
-
-                            <h3 class="card-title">
-                                <i class="far fa-calendar-alt"></i>
-                                Calendar
-                            </h3>
-                            <!-- tools card -->
-                            <div class="card-tools">
-                                <!-- button with a dropdown -->
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" data-offset="-52">
-                                        <i class="fas fa-bars"></i>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">Lọc thống kê</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
                                     </button>
-                                    <div class="dropdown-menu" role="menu">
-                                        <a href="#" class="dropdown-item">Add new event</a>
-                                        <a href="#" class="dropdown-item">Clear events</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="#" class="dropdown-item">View calendar</a>
+                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="mb-1">
+                                                <button type="button" id="filterDay" class="btn btn-info">Hôm nay</button>
+                                            </div>
+                                            <div class="mb-1">
+                                                <button type="button" id="filterWeek" class="btn btn-info">Tuần này</button>
+                                            </div>
+                                            <div class="mb-1">
+                                                <button type="button" id="filterMonth" class="btn btn-info">Tháng này</button>
+                                            </div>
+                                            <div class="mb-1">
+                                                <button type="button" id="filterYear" class="btn btn-info">Năm này</button>
+                                            </div>
+                                            <div class="mb-1">
+                                                <button type="button" id="all" class="btn btn-info">Tất cả</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="row">
+                                            <div class="col-md-11">
+                                                <div class="d-flex" id="customRange">
+                                                    <!-- Từ ngày -->
+                                                    <div class="col-md-6 mb-3 me-3">
+                                                        <div class="d-flex align-items-center">
+                                                            <label for="startDate" class="form-label mb-0 me-2 w-auto" style="min-width: 70px;">Từ ngày</label>
+                                                            <input type="date" id="startDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <!-- Đến ngày -->
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="d-flex align-items-center">
+                                                            <label for="endDate" class="form-label mb-0 me-2 w-auto" style="min-width: 70px;">Đến ngày</label>
+                                                            <input type="date" id="endDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <button type="button" id="filterButton" class="btn btn-success">
+                                                    Tìm
+                                                </button>                                              
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
                             </div>
                         </div>
-                        <div class="card-body pt-0">
-                            <div id="calendar" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="row">                    
+                    <div class="col-md-8">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">Thiết bị hay báo hỏng</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <table id="example-table-2" class="table table-bordered table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Hình ảnh</th>
+                                                            <th>Tên thiết bị</th>
+                                                            <th>Số hiệu</th>
+                                                            <th>Số lần hỏng</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @php
+                                                            $counter = 1;
+                                                        @endphp
+                                                        @foreach ($topDeviceReport as $item)
+                                                            <tr>
+                                                                <td>{{ $counter++ }}</td>
+                                                                <td><img src="{{ $item->image}}" alt="Hình ảnh" width="70" height="70"></td>
+                                                                <td>{{ $item->name }}</td>
+                                                                <td>{{ $item->code }}</td>
+                                                                <td>{{ $item->failure_count }}</td>
+                                                            </tr>
+                                                        @endforeach                                                                                                 
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>                                   
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </section>
+                    <div class="col-md-4">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">Thiết bị hay báo hỏng</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="donutChart" style="min-height: 386px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">Trạng thái bảo trì</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart">
+                                    <canvas id="donutChartStatus" style="min-height: 250px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">Phòng hay báo hỏng</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart">
+                                    <canvas id="barChartRoom" style="min-height: 250px; height: 300px; max-height: 300px; max-width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
             </div>
-        </div>
-    </section>
-</div>
+        </section>
+    </div>
 @endsection
-
 <script>
     setTimeout(function() {
         $("#myAlert").fadeOut(500);
-    },5500);
+    }, 3500);
 </script>
+@section('scripts')
+<script src="{{asset("assets/plugins/chart.js/Chart.min.js")}}"></script>
+<script>
+    $(document).ready(function() {
+        loadData('all');
+
+        $('#filterDay, #filterWeek, #filterMonth, #filterYear, #all').click(function () {
+            var timeType = $(this).attr('id');
+            loadData(timeType);
+        });
+
+        $('#filterButton').click(function () {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            if (!startDate || !endDate) {
+                toastr.error('Vui lòng chọn thời gian thống kê');
+                return;
+            }
+
+            var start = new Date(startDate);
+            var end = new Date(endDate);
+            if (start > end) {
+                toastr.error('Ngày bắt đầu không thể lớn hơn ngày kết thúc');
+                return;
+            }
+            loadData('custom', startDate, endDate);
+        });
+
+        function loadData(timeType, startDate = null, endDate = null) {
+            $.ajax({
+                url: '/use-unit/trang-chu',
+                method: 'GET',
+                data: {
+                    timeType: timeType,
+                    startDate: startDate,
+                    endDate: endDate  
+                },
+                success: function (response) {
+                    var topDeviceReport = response.topDeviceReport;
+                    var maintenanceStatus = response.maintenanceStatus;
+                    var topRoomsByFailures = response.topRoomsByFailures;
+                    // Xử lý topDeviceReport (biểu đồ donut)
+                    var labels = [];
+                    var data = [];
+                    topDeviceReport.forEach(function(item) {
+                        labels.push(item.name);
+                        data.push(item.failure_count);
+                    });
+                    renderDonutChart(labels, data);
+
+                    //Xử lý maintenanceStatus
+                    var labelStatus = [];
+                    var dataStatus = [];
+                    maintenanceStatus.forEach(function(item) {
+                        labelStatus.push(item.name);
+                        dataStatus.push(item.failure_count);
+                    });
+                    renderDonutChartStatus(labelStatus, dataStatus);
+                
+                    // Xử lý topRoomsByFailures (biểu đồ cột cho phòng)
+                    var roomLabels = [];
+                    var roomData = [];
+                    topRoomsByFailures.forEach(function(item) {
+                        roomLabels.push(item.room_name);
+                        roomData.push(item.failure_count);
+                    });
+                    renderBarChartRoom(roomLabels, roomData);
+                },
+                error: function(xhr) {
+                    console.error("Lỗi khi gọi AJAX:", xhr.responseText);
+                }
+            });
+        }
+
+        // Hàm render donut chart
+        function renderDonutChart(labels, data) {
+            var donutChartCanvas = $('#donutChart').get(0).getContext('2d');
+            var donutData = {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['#f56954', '#17a2b8', '#f39c12', '#00c0ef', '#3c8dbc'],
+                }]
+            };
+            new Chart(donutChartCanvas, {
+                type: 'doughnut',
+                data: donutData
+            });
+        }
+
+        function renderDonutChartStatus(labels, data) {
+            var donutChartCanvas = $('#donutChartStatus').get(0).getContext('2d');
+            var donutData = {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['#f56954', '#007bff', '#17a2b8', '#28a745'],
+                }]
+            };
+            new Chart(donutChartCanvas, {
+                type: 'doughnut',
+                data: donutData
+            });
+        }
+
+        // Hàm render bar chart cho phòng
+        function renderBarChartRoom(labels, data) {
+            var barChartCanvas = $('#barChartRoom').get(0).getContext('2d');
+            var barChartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Số lần hỏng theo phòng',
+                    backgroundColor: 'rgba(60,141,188,0.9)',
+                    borderColor: 'rgba(60,141,188,0.8)',
+                    borderWidth: 1,
+                    data: data,
+                }]
+            };
+
+            var barChartOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+                legend: {
+                    display: true
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: true,
+                        },
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        barPercentage: 0.15,
+                    }],
+                    yAxes: [{
+                        gridLines: {
+                            display: true,
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            callback: function(value) {
+                                if (Number.isInteger(value)) {
+                                    return value;
+                                }
+                            }
+                        }
+                    }]
+                }
+            };
+
+            new Chart(barChartCanvas, {
+                type: 'bar',
+                data: barChartData,
+                options: barChartOptions
+            });
+        }
+
+        // Hàm render area chart (biểu đồ đường)
+        function renderAreaChart(labels, data) {
+            var areaChartCanvas = $('#areaChart').get(0).getContext('2d');
+            var areaChartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Số lần hỏng theo phòng',
+                    backgroundColor: 'rgba(60,141,188,0.9)',
+                    borderColor: 'rgba(60,141,188,0.8)',
+                    pointRadius: false,
+                    pointColor: '#3b8bba',
+                    pointStrokeColor: 'rgba(60,141,188,1)',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: 'rgba(60,141,188,1)',
+                    data: data
+                }]
+            };
+
+            var areaChartOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: true,
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1,
+                            callback: function(value) {
+                                if (Number.isInteger(value)) {
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(areaChartCanvas, {
+                type: 'line',
+                data: areaChartData,
+                options: areaChartOptions
+            });
+        }
+    });
+</script>
+@endsection

@@ -94,6 +94,7 @@ Route::prefix('admin')->middleware("admin")->group(function () {
     Route::post('/user/change-status/{id}', [UserController::class, 'changeStatus']);
 });
 
+//User Unit
 Route::prefix('use-unit')->middleware("use-unit")->group(function () {
     Route::get('/trang-chu', [HomeUserUnitController::class, 'index']) ->name('homeU.index');
 
@@ -116,6 +117,7 @@ Route::prefix('use-unit')->middleware("use-unit")->group(function () {
     Route::post('/cancel/{id}', [MaintenanceController::class, 'cancel']);
     Route::get('/danh-sach-bao-loi/{id}', [MaintenanceController::class, 'maintenance']) ->name('main.maintenance');
     Route::get('/chi-tiet-bao-loi/{id}', [MaintenanceController::class, 'detail']) ->name('main.detail');
+    Route::post('/review', [MaintenanceController::class, 'saveReview']);
 });
 
 Route::prefix('manager-unit')->middleware("manager-unit")->group(function () {
@@ -131,10 +133,13 @@ Route::prefix('manager-unit')->middleware("manager-unit")->group(function () {
 
 Route::prefix('technician')->middleware("technician")->group(function () {
     Route::get('/trang-chu', [HomeTechnicianController::class, 'index']) ->name('homeT.index');
-
+    Route::get('/cho-xu-ly', [HomeTechnicianController::class, 'taskWait']) ->name('homeT.taskWait');
+    Route::get('/da-hoan-thanh', [HomeTechnicianController::class, 'taskComplete']) ->name('homeT.taskComplete');
+    
     //Task
     Route::get('/danh-sach-cong-viec', [TaskController::class, 'index']) ->name('tech.task');
     Route::get('/chi-tiet-cong-viec/{id}', [TaskController::class, 'detail']) ->name('tech.detail');
     Route::post('/updateTask', [TaskController::class, 'updateTask']);
+    Route::post('/cancel-task', [TaskController::class, 'cancelTask']);
 });
 

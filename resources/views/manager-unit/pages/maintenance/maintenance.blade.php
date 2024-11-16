@@ -49,13 +49,20 @@
                                         <td>{{ $counter++ }}</td>
                                         <td><img src="{{ $items->device->image }}" alt="" style="width: 80px; height: 80px"></td>
                                         <td>{{ $items->device->code }}</td>
-                                        @if($items->status == 1 || $items->status == 2)
-                                            <td><span class="text-danger">Chưa phân công</span></td>
-                                            <td><span class="text-danger">Chưa phân công</span></td>
-                                        @else
-                                            <td><img src="{{ $items->user->avatar }}" alt="" style="width: 80px; height: 80px"></td>
-                                            <td>{{ $items->user->full_name }}</td>
-                                        @endif
+                                        <td id="avatar-td-{{ $items->detail_id }}">
+                                            @if($items->status == 1 || $items->status == 2)
+                                                <span class="text-danger">Chưa phân công</span>
+                                            @else
+                                                <img src="{{ $items->user->avatar }}" alt="" style="width: 80px; height: 80px">
+                                            @endif
+                                        </td>
+                                        <td id="name-td-{{ $items->detail_id }}">
+                                            @if($items->status == 1 || $items->status == 2)
+                                                <span class="text-danger">Chưa phân công</span>
+                                            @else
+                                                {{ $items->user->full_name }}
+                                            @endif
+                                        </td>
                                         <td id="status-{{ $items->detail_id }}">
                                             @switch($items->status)
                                                 @case(1)
@@ -82,7 +89,7 @@
                                                 <i class="fa-solid fa-eye"></i></i>
                                             </a>
                                             @if($items->status == 2)
-                                                <a href="#" class="btn btn-success btn-assign btn-sm" title="Phân công kỹ thuật viên" data-toggle="modal" data-target="#modal-user" data-id="{{ $items->detail_id }}">
+                                                <a href="#" id="assign-button-{{ $items->detail_id }}" class="btn btn-success btn-assign btn-sm" title="Phân công kỹ thuật viên" data-toggle="modal" data-target="#modal-user" data-id="{{ $items->detail_id }}">
                                                     <i class="fa-solid fa-user-check"></i>
                                                 </a>
                                             @endif
@@ -186,30 +193,50 @@
 
         $(document).on('click', '.btn-confirm-assign', function () {
             const userId = $(this).data('id');
-            $.ajax({
-                url: '/manager-unit/phan-cong',
-                type: 'POST',
-                data: {
-                    detail_id: selectedDetailId,
-                    user_id: userId,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (response) {
-                    if (response.success) {
-                        toastr.success(response.message);
-                        $('#modal-user').modal('hide');
-                        setTimeout(function() {
-                            window.location.href = '/manager-unit/chi-tiet-bao-loi/'+selectedDetailId;
-                        }, 1000);
-                    } else {
-                        toastr.error(response.message);
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("Error details:", jqXHR);
-                    console.log("Text status:", textStatus);
-                    console.log("Error thrown:", errorThrown);
-                    toastr.error('Đã xảy ra lỗi');
+            Swal.fire({
+                title: "Xác nhận phân công cho cán bộ?",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Phân công",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/manager-unit/phan-cong',
+                        type: 'POST',
+                        data: {
+                            detail_id: selectedDetailId,
+                            user_id: userId,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success(response.message);
+                                $('#modal-user').modal('hide');
+                                const avatarUrl = response.user.avatar;
+                                const userName = response.user.full_name;
+                                const imgTd = document.querySelector(`#avatar-td-${selectedDetailId}`);
+                                imgTd.innerHTML = `<img src="${avatarUrl}" alt="" style="width: 80px; height: 80px">`;
+                                const nameTd = document.querySelector(`#name-td-${selectedDetailId}`);
+                                nameTd.textContent = userName;
+                                const statusTd = document.querySelector(`#status-${selectedDetailId}`);
+                                statusTd.innerHTML = `<span class="btn btn-sm btn-success" style="width:115px">Đang bảo trì</span>`;
+                                const assignButton = document.querySelector(`#assign-button-${selectedDetailId}`);
+                                if (assignButton) {
+                                    assignButton.style.display = 'none';
+                                }
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log("Error details:", jqXHR);
+                            console.log("Text status:", textStatus);
+                            console.log("Error thrown:", errorThrown);
+                            toastr.error('Đã xảy ra lỗi');
+                        }
+                    });
                 }
             });
         });

@@ -159,7 +159,6 @@
         $.widget.bridge('uibutton', $.ui.button)
     </script>
     <script src="{{asset("assets/plugins/bootstrap/js/bootstrap.bundle.min.js")}}"></script>
-    <script src="{{asset("assets/plugins/chart.js/Chart.min.js")}}"></script>
     <script src="{{asset("assets/plugins/jqvmap/jquery.vmap.min.js")}}"></script>
     <script src="{{asset("assets/plugins/jqvmap/maps/jquery.vmap.usa.js")}}"></script>
     <script src="{{asset("assets/plugins/jquery-knob/jquery.knob.min.js")}}"></script>

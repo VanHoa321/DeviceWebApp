@@ -14,6 +14,7 @@ class MaintenanceReview extends Model
         "attitude",
         "response",
         "description",
+        "status",
     ];
     protected $primaryKey = 'review_id';
     protected $table = 'maintenance_reviews';

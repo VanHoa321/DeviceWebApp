@@ -69,4 +69,16 @@ class TaskController extends Controller
             return response()->json(['error' => 'Internal Server Error', 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function cancelTask($id){
+        $detail = MaintenanceDetail::find($id);
+        if ($detail){
+            $detail->status = 0;
+            $detail->save();
+            return response()->json(['success' => true, 'message' => 'Hủy công việc thành công']);
+        } else {
+            return response()->json(['danger' => false, 'message' => 'Có lỗi xảy ra, hãy thử lại sau'], 404);
+        }
+
+    }
 }

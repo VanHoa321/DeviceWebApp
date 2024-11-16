@@ -23,10 +23,14 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <div>
-                                <a type="button" class="btn btn-success" data-toggle="modal" data-target="#model-review">
-                                    <i class="fa-solid fa-star" title="Đánh giá công việc"></i>
-                                </a>
+                            <div id="review">
+                                @if ($maintenance->status == 3 && $review->status == 0)
+                                    <a type="button" class="btn btn-success" data-toggle="modal" data-target="#model-review">
+                                        <i class="fa-solid fa-star" title="Đánh giá công việc"></i>
+                                    </a>
+                                @else
+                                    <h3>Chi tiết đơn bảo trì</h3>
+                                @endif
                             </div>
                         </div>
                         <div class="card-body">
@@ -141,7 +145,7 @@
                             </div>
                             <div class="modal-footer justify-content-between">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
-                                <button type="button" class="btn btn-success btn-save-error">Lưu</button>
+                                <button type="button" data-id="{{$review->review_id}}" class="btn btn-success btn-save-review">Đánh giá</button>
                             </div>
                         </div>
                     </div>
@@ -180,9 +184,7 @@
                         },
                         success: function (response) {
                             toastr.success(response.message);
-                            // Ẩn nút hủy phiếu sau khi thành công
                             $('a[data-id="' + id + '"]').closest('td').find('.btn-cancel-main').hide();
-                            // Cập nhật trạng thái hiển thị
                             const statusTd = $('#status-' + id);
                             statusTd.html('<span class="btn btn-sm btn-danger" style="width:115px">Đã hủy</span>');
                         },
@@ -197,6 +199,43 @@
         setTimeout(function() {
             $("#myAlert").fadeOut(500);
         },3500);
+
+        $('body').on('click', '.btn-save-review', function (e) {
+            e.preventDefault();
+            
+            var quality = $('select[name="quality"]').val();
+            var attitude = $('select[name="attitude"]').val();
+            var response = $('select[name="response"]').val();
+            var description = $('textarea[name="description"]').val();
+            var review_id = $(this).data('id');
+            $.ajax({
+                url: "/use-unit/review",
+                type: "POST",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    review_id: review_id,
+                    quality: quality,
+                    attitude: attitude,
+                    response: response,
+                    description: description,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        $('#model-review').modal('hide');
+                        $('#review').html(`
+                            <h3>Chi tiết đơn bảo trì</h3>
+                        `);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("AJAX Error:", error);
+                    toastr.error('Có lỗi khi gửi đánh giá');
+                }
+            });
+        });
     })
 </script>                              
 @endsection

@@ -161,6 +161,7 @@ class ErrorReportController extends Controller
         $review->attitude = 5;
         $review->response = 5;
         $review->description = null;
+        $review->status = 0;
         $review->save();
 
         $review_id = $review->review_id;
