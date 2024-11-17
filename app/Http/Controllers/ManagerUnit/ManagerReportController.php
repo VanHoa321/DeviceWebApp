@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ManagerUnit;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendReporterNotification;
 use App\Jobs\SendTechnicianAssignmentNotification;
 use App\Models\Device;
 use App\Models\Maintenance;
@@ -55,7 +56,7 @@ class ManagerReportController extends Controller
     {
         $detailId = $request->detail_id;
         $userId = $request->user_id;
-        $user = User::find($userId);
+        $technician = User::find($userId);
         $detail = MaintenanceDetail::where('detail_id', $detailId)->first();
         $maintenance = Maintenance::where("maintenance_id", $detail->maintenance_id)->first();
         $reporter = User::where('user_id', $maintenance->user_id)->first();
@@ -66,7 +67,8 @@ class ManagerReportController extends Controller
             $maintenanceDetail->status = 3;
             $maintenanceDetail->save();
             SendTechnicianAssignmentNotification::dispatch($reporter, $taskmaster, $detail, $maintenance, $userId)->delay(now()->addSeconds(10));
-            return response()->json(['success' => true, 'message' => 'Phân công kỹ thuật viên thành công', 'user' => $user]);
+            SendReporterNotification::dispatch($technician, $taskmaster, $detail, $maintenance, $reporter->user_id)->delay(now()->addSeconds(10));
+            return response()->json(['success' => true, 'message' => 'Phân công kỹ thuật viên thành công', 'user' => $technician]);
         }
         return response()->json(['success' => false, 'message' => 'Không tìm thấy chi tiết bảo trì']);
     }

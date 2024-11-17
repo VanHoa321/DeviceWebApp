@@ -2,41 +2,40 @@
 
 namespace App\Jobs;
 
-use App\Mail\TechnicianAssigned;
-use App\Models\Device;
+use App\Mail\SendReport;
+use App\Mail\SendReportNotification;
 use Illuminate\Bus\Queueable;
-use App\Models\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Device;
+use App\Models\Notification;
 
-class SendTechnicianAssignmentNotification implements ShouldQueue
+class SendReporterNotification implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $reporter;
+    protected $technician;
     protected $taskmaster;
     protected $detail;
     protected $maintenance;
     protected $userid;
-
-    public function __construct($reporter, $taskmaster, $detail, $maintenance, $userid)
+    public function __construct($technician, $taskmaster, $detail, $maintenance, $userid)
     {
-        $this->reporter = $reporter;
+        $this->technician = $technician;
         $this->taskmaster = $taskmaster;
         $this->detail = $detail;
         $this->maintenance = $maintenance;
         $this->userid = $userid;
     }
 
-    public function handle()
+    public function handle(): void
     {
-        
         $device = Device::find($this->detail->device_id);
-        $message = 'Bạn vừa được phân công bảo trì cho thiết bị ' . $device->name . ' với số hiệu ' . $device->code . "\n" . ' Báo cáo lỗi của thiết bị:' . $this->detail->error_description;
+        $message = 'Thiết bị mà bạn báo hỏng ' . $device->name . ' với số hiệu ' . $device->code . "\n" . ' Đã được phân công cho kỹ thuật viên:' . $this->technician->full_name . 'và có số điện thoại là: '. $this->technician->phone;
         $created_at = now();
         Notification::create([
             'send_id' => $this->taskmaster->user_id,
@@ -45,7 +44,6 @@ class SendTechnicianAssignmentNotification implements ShouldQueue
             'created_at' => $created_at,
             'is_read' => false
         ]);
-        Mail::to('vanhoa12092003@gmail.com')->send(new TechnicianAssigned($this->reporter, $this->taskmaster, $this->maintenance, $this->detail));
+        Mail::to('vanhoa12092003@gmail.com')->send(new SendReport($this->technician, $this->taskmaster, $this->maintenance, $this->detail));
     }
 }
-

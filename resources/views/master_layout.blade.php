@@ -215,8 +215,8 @@
                         "previous": "Trước"
                     }
                 },
-                lengthMenu: [3, 5, 10, 25, 50, 100],
-                pageLength: 3
+                lengthMenu: [2, 5, 10, 25, 50, 100],
+                pageLength: 2
             });
         });
     </script>
