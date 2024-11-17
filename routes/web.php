@@ -121,8 +121,12 @@ Route::prefix('use-unit')->middleware("use-unit")->group(function () {
 });
 
 Route::prefix('manager-unit')->middleware("manager-unit")->group(function () {
+    //Home
     Route::get('/trang-chu', [HomeManagerUnitController::class, 'index']) ->name('homeM.index');
-    
+    Route::get('/cho-xac-nhan', [HomeManagerUnitController::class, 'listConfirm']) ->name('homeM.listConfirm');
+    Route::get('/dang-bao-tri', [HomeManagerUnitController::class, 'listProgress']) ->name('homeM.listProgress');
+    Route::get('/da-hoan-thanh', [HomeManagerUnitController::class, 'listSuccess']) ->name('homeM.listSuccess');
+    Route::get('/da-huy', [HomeManagerUnitController::class, 'listCancel']) ->name('homeM.listCancel');
     //Maintenance
     Route::get('/danh-sach-bao-tri', [ManagerReportController::class, 'index']) ->name('mainM.index');
     Route::get('/danh-sach-bao-loi/{id}', [ManagerReportController::class, 'maintenance_detail']) ->name('mainM.maintenance_detail');
